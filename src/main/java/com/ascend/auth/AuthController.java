@@ -38,7 +38,11 @@ public class AuthController {
     }
 
     @PostMapping("/validate")
-    public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> validateToken(@RequestHeader(value = "Authorization", required = false) String authHeader) {
+        if (authHeader == null || authHeader.isEmpty()) {
+            return ResponseEntity.status(401).body("Missing authorization header");
+        }
+        
         try {
             String token = authHeader.replace("Bearer ", "");
             UUID userId = jwtService.validateToken(token);

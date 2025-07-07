@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface SessionRepository extends JpaRepository<Session, UUID> {
-    List<Session> findByUserId(UUID id);
-    List<Session> findByUserIdAndDiscipline(UUID id, SessionDiscipline discipline);
-    List<Session> findByUserIdAndDate(UUID id, java.time.LocalDate date);
+    List<Session> findByUserId(UUID userId);
+    List<Session> findByUserIdAndDiscipline(UUID userId, SessionDiscipline discipline);
+    List<Session> findByUserIdAndDate(UUID userId, java.time.LocalDate date);
 }

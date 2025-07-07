@@ -19,6 +19,7 @@ public class UserService {
             User.builder()
                 .email(email)
                 .password(hashed)
+                .createdAt(java.time.LocalDateTime.now())
                 .build()
         );
     }
