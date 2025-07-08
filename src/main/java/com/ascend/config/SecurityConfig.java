@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @RequiredArgsConstructor
@@ -17,6 +18,7 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final Environment environment;
+    private final CorsConfigurationSource corsConfigurationSource;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -26,7 +28,7 @@ public class SecurityConfig {
         if (isTestProfile) {
             return http
                     .csrf(csrf -> csrf.disable())
-                    .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                    .cors(cors -> cors.configurationSource(corsConfigurationSource))
                     .authorizeHttpRequests(auth -> auth
                             .requestMatchers("/auth/**", "/health", "/", "/api/**").permitAll()
                             .anyRequest().authenticated()
@@ -39,7 +41,7 @@ public class SecurityConfig {
         } else {
             return http
                     .csrf(csrf -> csrf.disable())
-                    .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                    .cors(cors -> cors.configurationSource(corsConfigurationSource))
                     .authorizeHttpRequests(auth -> auth
                             .requestMatchers("/auth/**", "/health", "/", "/api/**").permitAll()
                             .anyRequest().authenticated()
