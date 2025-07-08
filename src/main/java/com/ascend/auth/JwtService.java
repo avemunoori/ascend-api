@@ -49,7 +49,7 @@ public class JwtService {
 
             return UUID.fromString(claims.getSubject());
         } catch (JwtException e) {
-            return null;
+            throw new RuntimeException("Invalid token");
         }
     }
 

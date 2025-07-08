@@ -6,6 +6,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,12 +37,22 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Map<String, String>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", "Invalid request body format");
+        error.put("message", "Please check your JSON format and ensure all required fields are present");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, String>> handleRuntimeException(RuntimeException ex) {
         Map<String, String> error = new HashMap<>();
         error.put("error", ex.getMessage());
         
-        if (ex.getMessage().contains("not found")) {
+        if (ex.getMessage().contains("Invalid token")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+        } else if (ex.getMessage().contains("not found")) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
         } else if (ex.getMessage().contains("Unauthorized")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
@@ -54,6 +65,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleGenericException(Exception ex) {
         Map<String, String> error = new HashMap<>();
         error.put("error", "An unexpected error occurred");
+        error.put("message", ex.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 } 

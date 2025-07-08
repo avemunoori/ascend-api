@@ -26,6 +26,7 @@ public class SecurityConfig {
         if (isTestProfile) {
             return http
                     .csrf(csrf -> csrf.disable())
+                    .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                     .authorizeHttpRequests(auth -> auth
                             .requestMatchers("/auth/**", "/health", "/", "/api/**").permitAll()
                             .anyRequest().authenticated()
@@ -38,8 +39,9 @@ public class SecurityConfig {
         } else {
             return http
                     .csrf(csrf -> csrf.disable())
+                    .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                     .authorizeHttpRequests(auth -> auth
-                            .requestMatchers("/auth/**", "/health", "/").permitAll()
+                            .requestMatchers("/auth/**", "/health", "/", "/api/**").permitAll()
                             .anyRequest().authenticated()
                     )
                     .sessionManagement(sess -> sess
