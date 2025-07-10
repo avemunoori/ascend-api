@@ -2,6 +2,9 @@ package com.ascend.session;
 
 import lombok.Data;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
+import jakarta.validation.constraints.AssertTrue;
 
 import java.time.LocalDate;
 
@@ -20,4 +23,12 @@ public class CreateSessionRequest {
     
     @NotNull(message = "Sent status is required")
     private boolean sent;
+
+    @AssertTrue(message = "Grade is not compatible with the selected discipline")
+    public boolean isGradeCompatibleWithDiscipline() {
+        if (discipline == null || grade == null) {
+            return true; // Let @NotNull handle null validation
+        }
+        return grade.supportsDiscipline(discipline);
+    }
 }

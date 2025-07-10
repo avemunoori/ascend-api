@@ -24,7 +24,7 @@ public class GradeUtils {
      */
     public static Grade[] getGradesForDiscipline(SessionDiscipline discipline) {
         return java.util.Arrays.stream(Grade.values())
-                .filter(grade -> grade.getDiscipline() == discipline)
+                .filter(grade -> grade.supportsDiscipline(discipline))
                 .toArray(Grade[]::new);
     }
     
@@ -34,7 +34,7 @@ public class GradeUtils {
     public static boolean isValidGrade(String gradeString, SessionDiscipline discipline) {
         try {
             Grade grade = Grade.fromString(gradeString);
-            return grade.getDiscipline() == discipline;
+            return grade.supportsDiscipline(discipline);
         } catch (IllegalArgumentException e) {
             return false;
         }

@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -258,5 +259,87 @@ class SessionControllerTest {
     void getGradesForDiscipline_ShouldReturnGrades() throws Exception {
         mockMvc.perform(get("/api/sessions/grades/BOULDER"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username = "test@example.com")
+    void testCreateSessionWithAllDisciplines() throws Exception {
+        // Test BOULDER discipline
+        CreateSessionRequest boulderRequest = new CreateSessionRequest();
+        boulderRequest.setDiscipline(SessionDiscipline.BOULDER);
+        boulderRequest.setGrade(Grade.V3);
+        boulderRequest.setDate(LocalDate.now());
+        boulderRequest.setSent(true);
+
+        mockMvc.perform(post("/api/sessions")
+                .header("Authorization", "Bearer " + validToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(boulderRequest)))
+                .andExpect(status().isOk());
+
+        // Test LEAD discipline
+        CreateSessionRequest leadRequest = new CreateSessionRequest();
+        leadRequest.setDiscipline(SessionDiscipline.LEAD);
+        leadRequest.setGrade(Grade.YDS_5_10A);
+        leadRequest.setDate(LocalDate.now());
+        leadRequest.setSent(true);
+
+        mockMvc.perform(post("/api/sessions")
+                .header("Authorization", "Bearer " + validToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(leadRequest)))
+                .andExpect(status().isOk());
+
+        // Test TOP_ROPE discipline
+        CreateSessionRequest topRopeRequest = new CreateSessionRequest();
+        topRopeRequest.setDiscipline(SessionDiscipline.TOP_ROPE);
+        topRopeRequest.setGrade(Grade.YDS_5_8);
+        topRopeRequest.setDate(LocalDate.now());
+        topRopeRequest.setSent(true);
+
+        mockMvc.perform(post("/api/sessions")
+                .header("Authorization", "Bearer " + validToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(topRopeRequest)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username = "test@example.com")
+    void testInvalidGradeForDiscipline() throws Exception {
+        // Test V-scale grade with LEAD discipline (should fail)
+        CreateSessionRequest invalidRequest = new CreateSessionRequest();
+        invalidRequest.setDiscipline(SessionDiscipline.LEAD);
+        invalidRequest.setGrade(Grade.V3); // V-scale grade for LEAD discipline
+        invalidRequest.setDate(LocalDate.now());
+        invalidRequest.setSent(true);
+
+        mockMvc.perform(post("/api/sessions")
+                .header("Authorization", "Bearer " + validToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(invalidRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Grade is not compatible with the selected discipline"));
+    }
+
+    @Test
+    @WithMockUser(username = "test@example.com")
+    void testInvalidDiscipline() throws Exception {
+        // Test with invalid discipline (should fail)
+        String invalidRequest = """
+            {
+                "discipline": "INVALID_DISCIPLINE",
+                "grade": "V3",
+                "date": "2024-01-15",
+                "sent": true
+            }
+            """;
+
+        mockMvc.perform(post("/api/sessions")
+                .header("Authorization", "Bearer " + validToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(invalidRequest))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Invalid discipline. Supported disciplines: BOULDER, LEAD, TOP_ROPE"));
     }
 } 

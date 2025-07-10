@@ -24,44 +24,53 @@ public enum Grade {
     V16(16.0, "V16", SessionDiscipline.BOULDER),
     V17(17.0, "V17", SessionDiscipline.BOULDER),
 
-    // YDS grades (for lead/sport climbing)
-    YDS_5_6(6.0, "5.6", SessionDiscipline.LEAD),
-    YDS_5_7(7.0, "5.7", SessionDiscipline.LEAD),
-    YDS_5_8(8.0, "5.8", SessionDiscipline.LEAD),
-    YDS_5_9(9.0, "5.9", SessionDiscipline.LEAD),
-    YDS_5_10A(10.1, "5.10a", SessionDiscipline.LEAD),
-    YDS_5_10B(10.2, "5.10b", SessionDiscipline.LEAD),
-    YDS_5_10C(10.3, "5.10c", SessionDiscipline.LEAD),
-    YDS_5_10D(10.4, "5.10d", SessionDiscipline.LEAD),
-    YDS_5_11A(11.1, "5.11a", SessionDiscipline.LEAD),
-    YDS_5_11B(11.2, "5.11b", SessionDiscipline.LEAD),
-    YDS_5_11C(11.3, "5.11c", SessionDiscipline.LEAD),
-    YDS_5_11D(11.4, "5.11d", SessionDiscipline.LEAD),
-    YDS_5_12A(12.1, "5.12a", SessionDiscipline.LEAD),
-    YDS_5_12B(12.2, "5.12b", SessionDiscipline.LEAD),
-    YDS_5_12C(12.3, "5.12c", SessionDiscipline.LEAD),
-    YDS_5_12D(12.4, "5.12d", SessionDiscipline.LEAD),
-    YDS_5_13A(13.1, "5.13a", SessionDiscipline.LEAD),
-    YDS_5_13B(13.2, "5.13b", SessionDiscipline.LEAD),
-    YDS_5_13C(13.3, "5.13c", SessionDiscipline.LEAD),
-    YDS_5_13D(13.4, "5.13d", SessionDiscipline.LEAD),
-    YDS_5_14A(14.1, "5.14a", SessionDiscipline.LEAD),
-    YDS_5_14B(14.2, "5.14b", SessionDiscipline.LEAD),
-    YDS_5_14C(14.3, "5.14c", SessionDiscipline.LEAD),
-    YDS_5_14D(14.4, "5.14d", SessionDiscipline.LEAD),
-    YDS_5_15A(15.1, "5.15a", SessionDiscipline.LEAD),
-    YDS_5_15B(15.2, "5.15b", SessionDiscipline.LEAD),
-    YDS_5_15C(15.3, "5.15c", SessionDiscipline.LEAD),
-    YDS_5_15D(15.4, "5.15d", SessionDiscipline.LEAD);
+    // YDS grades (for lead and top rope climbing)
+    YDS_5_6(6.0, "5.6", SessionDiscipline.LEAD, SessionDiscipline.TOP_ROPE),
+    YDS_5_7(7.0, "5.7", SessionDiscipline.LEAD, SessionDiscipline.TOP_ROPE),
+    YDS_5_8(8.0, "5.8", SessionDiscipline.LEAD, SessionDiscipline.TOP_ROPE),
+    YDS_5_9(9.0, "5.9", SessionDiscipline.LEAD, SessionDiscipline.TOP_ROPE),
+    YDS_5_10A(10.1, "5.10a", SessionDiscipline.LEAD, SessionDiscipline.TOP_ROPE),
+    YDS_5_10B(10.2, "5.10b", SessionDiscipline.LEAD, SessionDiscipline.TOP_ROPE),
+    YDS_5_10C(10.3, "5.10c", SessionDiscipline.LEAD, SessionDiscipline.TOP_ROPE),
+    YDS_5_10D(10.4, "5.10d", SessionDiscipline.LEAD, SessionDiscipline.TOP_ROPE),
+    YDS_5_11A(11.1, "5.11a", SessionDiscipline.LEAD, SessionDiscipline.TOP_ROPE),
+    YDS_5_11B(11.2, "5.11b", SessionDiscipline.LEAD, SessionDiscipline.TOP_ROPE),
+    YDS_5_11C(11.3, "5.11c", SessionDiscipline.LEAD, SessionDiscipline.TOP_ROPE),
+    YDS_5_11D(11.4, "5.11d", SessionDiscipline.LEAD, SessionDiscipline.TOP_ROPE),
+    YDS_5_12A(12.1, "5.12a", SessionDiscipline.LEAD, SessionDiscipline.TOP_ROPE),
+    YDS_5_12B(12.2, "5.12b", SessionDiscipline.LEAD, SessionDiscipline.TOP_ROPE),
+    YDS_5_12C(12.3, "5.12c", SessionDiscipline.LEAD, SessionDiscipline.TOP_ROPE),
+    YDS_5_12D(12.4, "5.12d", SessionDiscipline.LEAD, SessionDiscipline.TOP_ROPE),
+    YDS_5_13A(13.1, "5.13a", SessionDiscipline.LEAD, SessionDiscipline.TOP_ROPE),
+    YDS_5_13B(13.2, "5.13b", SessionDiscipline.LEAD, SessionDiscipline.TOP_ROPE),
+    YDS_5_13C(13.3, "5.13c", SessionDiscipline.LEAD, SessionDiscipline.TOP_ROPE),
+    YDS_5_13D(13.4, "5.13d", SessionDiscipline.LEAD, SessionDiscipline.TOP_ROPE),
+    YDS_5_14A(14.1, "5.14a", SessionDiscipline.LEAD, SessionDiscipline.TOP_ROPE),
+    YDS_5_14B(14.2, "5.14b", SessionDiscipline.LEAD, SessionDiscipline.TOP_ROPE),
+    YDS_5_14C(14.3, "5.14c", SessionDiscipline.LEAD, SessionDiscipline.TOP_ROPE),
+    YDS_5_14D(14.4, "5.14d", SessionDiscipline.LEAD, SessionDiscipline.TOP_ROPE),
+    YDS_5_15A(15.1, "5.15a", SessionDiscipline.LEAD, SessionDiscipline.TOP_ROPE),
+    YDS_5_15B(15.2, "5.15b", SessionDiscipline.LEAD, SessionDiscipline.TOP_ROPE),
+    YDS_5_15C(15.3, "5.15c", SessionDiscipline.LEAD, SessionDiscipline.TOP_ROPE),
+    YDS_5_15D(15.4, "5.15d", SessionDiscipline.LEAD, SessionDiscipline.TOP_ROPE);
 
     private final double numericValue;
     private final String displayValue;
-    private final SessionDiscipline discipline;
+    private final SessionDiscipline[] supportedDisciplines;
 
-    Grade(double numericValue, String displayValue, SessionDiscipline discipline) {
+    Grade(double numericValue, String displayValue, SessionDiscipline... supportedDisciplines) {
         this.numericValue = numericValue;
         this.displayValue = displayValue;
-        this.discipline = discipline;
+        this.supportedDisciplines = supportedDisciplines;
+    }
+
+    public boolean supportsDiscipline(SessionDiscipline discipline) {
+        for (SessionDiscipline supported : supportedDisciplines) {
+            if (supported == discipline) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static Grade fromString(String gradeString) {
@@ -73,12 +82,33 @@ public enum Grade {
         throw new IllegalArgumentException("Invalid grade: " + gradeString);
     }
 
+    public static Grade fromStringForDiscipline(String gradeString, SessionDiscipline discipline) {
+        for (Grade grade : values()) {
+            if (grade.displayValue.equalsIgnoreCase(gradeString) && grade.supportsDiscipline(discipline)) {
+                return grade;
+            }
+        }
+        throw new IllegalArgumentException("Invalid grade '" + gradeString + "' for discipline '" + discipline + "'. " +
+                "Supported grades for " + discipline + ": " + getSupportedGradesForDiscipline(discipline));
+    }
+
     public static Grade fromNumericValue(double numericValue, SessionDiscipline discipline) {
         for (Grade grade : values()) {
-            if (grade.numericValue == numericValue && grade.discipline == discipline) {
+            if (grade.numericValue == numericValue && grade.supportsDiscipline(discipline)) {
                 return grade;
             }
         }
         throw new IllegalArgumentException("Invalid numeric value: " + numericValue + " for discipline: " + discipline);
+    }
+
+    private static String getSupportedGradesForDiscipline(SessionDiscipline discipline) {
+        StringBuilder sb = new StringBuilder();
+        for (Grade grade : values()) {
+            if (grade.supportsDiscipline(discipline)) {
+                if (sb.length() > 0) sb.append(", ");
+                sb.append(grade.displayValue);
+            }
+        }
+        return sb.toString();
     }
 } 
