@@ -15,7 +15,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public User createUser(String email, String password) {
+    public User createUser(String email, String password, String firstName, String lastName) {
         log.info("Creating user with email: {}", email);
         try {
             String hashed = BCrypt.hashpw(password, BCrypt.gensalt());
@@ -23,6 +23,8 @@ public class UserService {
                 User.builder()
                     .email(email)
                     .password(hashed)
+                    .firstName(firstName)
+                    .lastName(lastName)
                     .createdAt(java.time.LocalDateTime.now())
                     .build()
             );

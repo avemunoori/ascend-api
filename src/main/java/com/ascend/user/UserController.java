@@ -22,8 +22,8 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserResponse> createUser(@Valid @RequestBody CreateUserRequest request) {
-        User user = userService.createUser(request.getEmail(), request.getPassword());
-        UserResponse response = new UserResponse(user.getId(), user.getEmail(), user.getCreatedAt());
+        User user = userService.createUser(request.getEmail(), request.getPassword(), request.getFirstName(), request.getLastName());
+        UserResponse response = new UserResponse(user.getId(), user.getEmail(), user.getCreatedAt(), user.getFirstName(), user.getLastName());
         return ResponseEntity.ok(response);
     }
 
@@ -31,7 +31,7 @@ public class UserController {
     public ResponseEntity<UserResponse> getUserById(@PathVariable UUID id) {
         User user = userService.getUserById(id)
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
-        UserResponse response = new UserResponse(user.getId(), user.getEmail(), user.getCreatedAt());
+        UserResponse response = new UserResponse(user.getId(), user.getEmail(), user.getCreatedAt(), user.getFirstName(), user.getLastName());
         return ResponseEntity.ok(response);
     }
 
@@ -42,7 +42,7 @@ public class UserController {
             UUID userId = jwtService.validateToken(token);
             User user = userService.getUserById(userId)
                     .orElseThrow(() -> new NoSuchElementException("User not found"));
-            UserResponse response = new UserResponse(user.getId(), user.getEmail(), user.getCreatedAt());
+            UserResponse response = new UserResponse(user.getId(), user.getEmail(), user.getCreatedAt(), user.getFirstName(), user.getLastName());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             throw new RuntimeException("Unauthorized");

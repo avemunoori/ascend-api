@@ -55,6 +55,8 @@ class SessionControllerTest {
         testUser = User.builder()
                 .email("test@example.com")
                 .password(BCrypt.hashpw("password123", BCrypt.gensalt()))
+                .firstName("Test")
+                .lastName("User")
                 .createdAt(java.time.LocalDateTime.now())
                 .build();
         testUser = userRepository.save(testUser);

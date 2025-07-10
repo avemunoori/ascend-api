@@ -44,6 +44,8 @@ class UserControllerTest {
         createUserRequest = new CreateUserRequest();
         createUserRequest.setEmail("test@example.com");
         createUserRequest.setPassword("password123");
+        createUserRequest.setFirstName("Test");
+        createUserRequest.setLastName("User");
     }
 
     @Test
@@ -54,6 +56,8 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.email").value("test@example.com"))
+                .andExpect(jsonPath("$.firstName").value("Test"))
+                .andExpect(jsonPath("$.lastName").value("User"))
                 .andExpect(jsonPath("$.createdAt").exists());
     }
 
@@ -62,6 +66,8 @@ class UserControllerTest {
         CreateUserRequest invalidRequest = new CreateUserRequest();
         invalidRequest.setEmail("invalid-email");
         invalidRequest.setPassword("");
+        invalidRequest.setFirstName("Test");
+        invalidRequest.setLastName("User");
 
         mockMvc.perform(post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)

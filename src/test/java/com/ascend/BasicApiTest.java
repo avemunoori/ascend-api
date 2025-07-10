@@ -64,7 +64,7 @@ class BasicApiTest {
     void createUserEndpoint_ShouldBeAccessible() throws Exception {
         mockMvc.perform(post("/api/users")
                 .contentType("application/json")
-                .content("{\"email\":\"newuser@example.com\",\"password\":\"password123\"}"))
+                .content("{\"email\":\"newuser@example.com\",\"password\":\"password123\",\"firstName\":\"New\",\"lastName\":\"User\"}"))
                 .andExpect(status().isOk()); // User creation endpoint should be accessible without authentication
     }
 } 

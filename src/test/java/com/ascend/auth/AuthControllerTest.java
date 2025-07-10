@@ -29,6 +29,9 @@ class AuthControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private com.ascend.user.UserRepository userRepository;
+
     private LoginRequest loginRequest;
 
     @BeforeEach
@@ -40,12 +43,25 @@ class AuthControllerTest {
 
     @Test
     void login_WithValidCredentials_ShouldReturnJwtToken() throws Exception {
-        // This test will use the real services, so we need to create a user in the database first
-        // For now, let's test that the endpoint is accessible
+        // Create a user in the database first
+        User user = User.builder()
+                .email("test@example.com")
+                .password(BCrypt.hashpw("password123", BCrypt.gensalt()))
+                .firstName("Test")
+                .lastName("User")
+                .createdAt(LocalDateTime.now())
+                .build();
+        userRepository.save(user);
+
         mockMvc.perform(post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(loginRequest)))
-                .andExpect(status().isUnauthorized()); // Should return 401 for non-existent user
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token").exists())
+                .andExpect(jsonPath("$.user").exists())
+                .andExpect(jsonPath("$.user.email").value("test@example.com"))
+                .andExpect(jsonPath("$.user.firstName").value("Test"))
+                .andExpect(jsonPath("$.user.lastName").value("User"));
     }
 
     @Test
@@ -58,7 +74,7 @@ class AuthControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().string("Invalid credentials"));
+                .andExpect(jsonPath("$.message").value("Invalid credentials"));
     }
 
     @Test
@@ -71,7 +87,7 @@ class AuthControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().string("Invalid credentials"));
+                .andExpect(jsonPath("$.message").value("Invalid credentials"));
     }
 
     @Test
@@ -88,13 +104,13 @@ class AuthControllerTest {
         mockMvc.perform(post("/auth/validate")
                 .header("Authorization", "Bearer invalid.token"))
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().string("Invalid token"));
+                .andExpect(jsonPath("$.message").value("Invalid token"));
     }
 
     @Test
     void validateToken_WithMissingAuthorizationHeader_ShouldReturn401() throws Exception {
         mockMvc.perform(post("/auth/validate"))
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().string("Missing authorization header"));
+                .andExpect(jsonPath("$.message").value("Missing authorization header"));
     }
 } 
