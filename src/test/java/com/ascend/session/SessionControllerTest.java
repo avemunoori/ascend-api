@@ -161,8 +161,48 @@ class SessionControllerTest {
     }
 
     @Test
+    void getAnalytics_WithWeekPeriod_ShouldReturnFilteredAnalytics() throws Exception {
+        mockMvc.perform(get("/api/sessions/analytics")
+                .param("period", "week")
+                .header("Authorization", "Bearer " + validToken))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void getAnalytics_WithMonthPeriod_ShouldReturnFilteredAnalytics() throws Exception {
+        mockMvc.perform(get("/api/sessions/analytics")
+                .param("period", "month")
+                .header("Authorization", "Bearer " + validToken))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void getAnalytics_WithYearPeriod_ShouldReturnFilteredAnalytics() throws Exception {
+        mockMvc.perform(get("/api/sessions/analytics")
+                .param("period", "year")
+                .header("Authorization", "Bearer " + validToken))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void getAnalytics_WithInvalidPeriod_ShouldReturnAllTimeAnalytics() throws Exception {
+        mockMvc.perform(get("/api/sessions/analytics")
+                .param("period", "invalid")
+                .header("Authorization", "Bearer " + validToken))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     void getStatsOverview_ShouldReturnSessionAnalytics() throws Exception {
         mockMvc.perform(get("/api/sessions/stats/overview")
+                .header("Authorization", "Bearer " + validToken))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void getStatsOverview_WithWeekPeriod_ShouldReturnFilteredAnalytics() throws Exception {
+        mockMvc.perform(get("/api/sessions/stats/overview")
+                .param("period", "week")
                 .header("Authorization", "Bearer " + validToken))
                 .andExpect(status().isOk());
     }
@@ -175,6 +215,14 @@ class SessionControllerTest {
     }
 
     @Test
+    void getProgressStats_WithMonthPeriod_ShouldReturnFilteredAnalytics() throws Exception {
+        mockMvc.perform(get("/api/sessions/stats/progress")
+                .param("period", "month")
+                .header("Authorization", "Bearer " + validToken))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     void getHighestGrades_ShouldReturnHighestGrades() throws Exception {
         mockMvc.perform(get("/api/sessions/stats/highest")
                 .header("Authorization", "Bearer " + validToken))
@@ -182,8 +230,24 @@ class SessionControllerTest {
     }
 
     @Test
+    void getHighestGrades_WithYearPeriod_ShouldReturnFilteredGrades() throws Exception {
+        mockMvc.perform(get("/api/sessions/stats/highest")
+                .param("period", "year")
+                .header("Authorization", "Bearer " + validToken))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     void getAverageGrades_ShouldReturnAverageGrades() throws Exception {
         mockMvc.perform(get("/api/sessions/stats/average")
+                .header("Authorization", "Bearer " + validToken))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void getAverageGrades_WithWeekPeriod_ShouldReturnFilteredGrades() throws Exception {
+        mockMvc.perform(get("/api/sessions/stats/average")
+                .param("period", "week")
                 .header("Authorization", "Bearer " + validToken))
                 .andExpect(status().isOk());
     }

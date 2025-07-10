@@ -117,42 +117,52 @@ public class SessionController {
     }
 
     @GetMapping("/analytics")
-    public ResponseEntity<SessionAnalytics> getAnalytics(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<SessionAnalytics> getAnalytics(
+            @RequestParam(required = false) String period,
+            @RequestHeader("Authorization") String authHeader) {
         String token = authHeader.replace("Bearer ", "");
         UUID userId = jwtService.validateToken(token);
-        SessionAnalytics analytics = sessionService.getAnalytics(userId);
+        SessionAnalytics analytics = sessionService.getAnalytics(userId, period);
         return ResponseEntity.ok(analytics);
     }
 
     @GetMapping("/stats/overview")
-    public ResponseEntity<SessionAnalytics> getStatsOverview(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<SessionAnalytics> getStatsOverview(
+            @RequestParam(required = false) String period,
+            @RequestHeader("Authorization") String authHeader) {
         String token = authHeader.replace("Bearer ", "");
         UUID userId = jwtService.validateToken(token);
-        SessionAnalytics analytics = sessionService.getAnalytics(userId);
+        SessionAnalytics analytics = sessionService.getAnalytics(userId, period);
         return ResponseEntity.ok(analytics);
     }
 
     @GetMapping("/stats/progress")
-    public ResponseEntity<ProgressAnalytics> getProgressStats(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<ProgressAnalytics> getProgressStats(
+            @RequestParam(required = false) String period,
+            @RequestHeader("Authorization") String authHeader) {
         String token = authHeader.replace("Bearer ", "");
         UUID userId = jwtService.validateToken(token);
-        ProgressAnalytics progress = sessionService.getProgressAnalytics(userId);
+        ProgressAnalytics progress = sessionService.getProgressAnalytics(userId, period);
         return ResponseEntity.ok(progress);
     }
 
     @GetMapping("/stats/highest")
-    public ResponseEntity<Map<SessionDiscipline, Grade>> getHighestGrades(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<Map<SessionDiscipline, Grade>> getHighestGrades(
+            @RequestParam(required = false) String period,
+            @RequestHeader("Authorization") String authHeader) {
         String token = authHeader.replace("Bearer ", "");
         UUID userId = jwtService.validateToken(token);
-        Map<SessionDiscipline, Grade> highestGrades = sessionService.getHighestGrades(userId);
+        Map<SessionDiscipline, Grade> highestGrades = sessionService.getHighestGrades(userId, period);
         return ResponseEntity.ok(highestGrades);
     }
 
     @GetMapping("/stats/average")
-    public ResponseEntity<Map<SessionDiscipline, Double>> getAverageGrades(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<Map<SessionDiscipline, Double>> getAverageGrades(
+            @RequestParam(required = false) String period,
+            @RequestHeader("Authorization") String authHeader) {
         String token = authHeader.replace("Bearer ", "");
         UUID userId = jwtService.validateToken(token);
-        Map<SessionDiscipline, Double> averageGrades = sessionService.getAverageGrades(userId);
+        Map<SessionDiscipline, Double> averageGrades = sessionService.getAverageGrades(userId, period);
         return ResponseEntity.ok(averageGrades);
     }
 

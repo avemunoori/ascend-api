@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.temporal.WeekFields;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -122,8 +124,71 @@ public class SessionService {
         return sessionRepository.findByUserIdAndDate(userId, date);
     }
 
+    private List<Session> getSessionsByPeriod(UUID userId, String period) {
+        List<Session> allSessions = getAllSessions(userId);
+        
+        if (period == null || period.trim().isEmpty()) {
+            return allSessions; // Default to all time
+        }
+        
+        try {
+            Period periodEnum = Period.valueOf(period.toUpperCase());
+            return filterSessionsByPeriod(allSessions, periodEnum);
+        } catch (IllegalArgumentException e) {
+            // If period is not recognized, return all sessions
+            return allSessions;
+        }
+    }
+
+    private List<Session> filterSessionsByPeriod(List<Session> sessions, Period period) {
+        LocalDate now = LocalDate.now();
+        
+        return sessions.stream()
+                .filter(session -> isSessionInPeriod(session.getDate(), now, period))
+                .collect(Collectors.toList());
+    }
+
+    private boolean isSessionInPeriod(LocalDate sessionDate, LocalDate currentDate, Period period) {
+        switch (period) {
+            case WEEK:
+                return isInCurrentWeek(sessionDate, currentDate);
+            case MONTH:
+                return isInCurrentMonth(sessionDate, currentDate);
+            case YEAR:
+                return isInCurrentYear(sessionDate, currentDate);
+            case ALL_TIME:
+            default:
+                return true;
+        }
+    }
+
+    private boolean isInCurrentWeek(LocalDate sessionDate, LocalDate currentDate) {
+        WeekFields weekFields = WeekFields.ISO;
+        int sessionWeek = sessionDate.get(weekFields.weekOfWeekBasedYear());
+        int currentWeek = currentDate.get(weekFields.weekOfWeekBasedYear());
+        int sessionYear = sessionDate.get(weekFields.weekBasedYear());
+        int currentYear = currentDate.get(weekFields.weekBasedYear());
+        
+        return sessionYear == currentYear && sessionWeek == currentWeek;
+    }
+
+    private boolean isInCurrentMonth(LocalDate sessionDate, LocalDate currentDate) {
+        YearMonth sessionYearMonth = YearMonth.from(sessionDate);
+        YearMonth currentYearMonth = YearMonth.from(currentDate);
+        
+        return sessionYearMonth.equals(currentYearMonth);
+    }
+
+    private boolean isInCurrentYear(LocalDate sessionDate, LocalDate currentDate) {
+        return sessionDate.getYear() == currentDate.getYear();
+    }
+
     public SessionAnalytics getAnalytics(UUID userId) {
-        List<Session> sessions = getAllSessions(userId);
+        return getAnalytics(userId, null);
+    }
+
+    public SessionAnalytics getAnalytics(UUID userId, String period) {
+        List<Session> sessions = getSessionsByPeriod(userId, period);
         
         if (sessions.isEmpty()) {
             return SessionAnalytics.builder()
@@ -187,7 +252,11 @@ public class SessionService {
     }
 
     public ProgressAnalytics getProgressAnalytics(UUID userId) {
-        List<Session> sessions = getAllSessions(userId);
+        return getProgressAnalytics(userId, null);
+    }
+
+    public ProgressAnalytics getProgressAnalytics(UUID userId, String period) {
+        List<Session> sessions = getSessionsByPeriod(userId, period);
         
         if (sessions.isEmpty()) {
             return ProgressAnalytics.builder()
@@ -278,7 +347,11 @@ public class SessionService {
     }
 
     public Map<SessionDiscipline, Grade> getHighestGrades(UUID userId) {
-        List<Session> sessions = getAllSessions(userId);
+        return getHighestGrades(userId, null);
+    }
+
+    public Map<SessionDiscipline, Grade> getHighestGrades(UUID userId, String period) {
+        List<Session> sessions = getSessionsByPeriod(userId, period);
         
         if (sessions.isEmpty()) {
             return Map.of();
@@ -296,7 +369,11 @@ public class SessionService {
     }
 
     public Map<SessionDiscipline, Double> getAverageGrades(UUID userId) {
-        List<Session> sessions = getAllSessions(userId);
+        return getAverageGrades(userId, null);
+    }
+
+    public Map<SessionDiscipline, Double> getAverageGrades(UUID userId, String period) {
+        List<Session> sessions = getSessionsByPeriod(userId, period);
         
         if (sessions.isEmpty()) {
             return Map.of();
