@@ -16,8 +16,7 @@ public class TestSecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/health", "/", "/api/users").permitAll() // Allow user creation
-                        .requestMatchers("/api/**").authenticated() // Require auth for other API endpoints
+                        .requestMatchers("/health", "/", "/api/**").permitAll() // Allow all API endpoints including auth
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess

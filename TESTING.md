@@ -8,8 +8,9 @@ The test suite is organized into the following test classes:
 
 ### 1. `AuthControllerTest` - Authentication Endpoints
 Tests the authentication-related endpoints:
-- **POST /auth/login** - User login with valid/invalid credentials
-- **POST /auth/validate** - Token validation with valid/invalid tokens
+- **POST /api/auth/login** - User login with valid/invalid credentials
+- **POST /api/auth/validate** - Token validation with valid/invalid tokens
+- **POST /api/auth/register** - User registration
 
 **Coverage:**
 - ✅ Valid login credentials return JWT token

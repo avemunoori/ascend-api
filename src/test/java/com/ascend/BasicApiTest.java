@@ -40,7 +40,7 @@ class BasicApiTest {
 
     @Test
     void authLoginEndpoint_ShouldBeAccessible() throws Exception {
-        mockMvc.perform(post("/auth/login")
+        mockMvc.perform(post("/api/auth/login")
                 .contentType("application/json")
                 .content("{\"email\":\"test@example.com\",\"password\":\"password123\"}"))
                 .andExpect(status().isUnauthorized()); // Should return 401 for invalid credentials

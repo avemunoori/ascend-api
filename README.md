@@ -37,8 +37,9 @@ The API will be available at `http://localhost:8080`
 ## 📚 API Endpoints
 
 ### Authentication
-- `POST /auth/login` - User login
-- `POST /auth/validate` - Validate JWT token
+- `POST /api/auth/login` - User login
+- `POST /api/auth/validate` - Validate JWT token
+- `POST /api/auth/register` - User registration
 
 ### Users
 - `POST /api/users` - Create new user

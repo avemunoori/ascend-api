@@ -53,7 +53,7 @@ class AuthControllerTest {
                 .build();
         userRepository.save(user);
 
-        mockMvc.perform(post("/auth/login")
+        mockMvc.perform(post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isOk())
@@ -70,7 +70,7 @@ class AuthControllerTest {
         invalidRequest.setEmail("invalid@example.com");
         invalidRequest.setPassword("password123");
 
-        mockMvc.perform(post("/auth/login")
+        mockMvc.perform(post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isUnauthorized())
@@ -83,7 +83,7 @@ class AuthControllerTest {
         invalidRequest.setEmail("test@example.com");
         invalidRequest.setPassword("wrongpassword");
 
-        mockMvc.perform(post("/auth/login")
+        mockMvc.perform(post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isUnauthorized())
@@ -94,14 +94,14 @@ class AuthControllerTest {
     void validateToken_WithValidToken_ShouldReturnUserInfo() throws Exception {
         // This test requires a valid JWT token, which we can't easily generate in this context
         // For now, let's test that the endpoint is accessible
-        mockMvc.perform(post("/auth/validate")
+        mockMvc.perform(post("/api/auth/validate")
                 .header("Authorization", "Bearer invalid.token"))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     void validateToken_WithInvalidToken_ShouldReturn401() throws Exception {
-        mockMvc.perform(post("/auth/validate")
+        mockMvc.perform(post("/api/auth/validate")
                 .header("Authorization", "Bearer invalid.token"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.message").value("Invalid token"));
@@ -109,7 +109,7 @@ class AuthControllerTest {
 
     @Test
     void validateToken_WithMissingAuthorizationHeader_ShouldReturn401() throws Exception {
-        mockMvc.perform(post("/auth/validate"))
+        mockMvc.perform(post("/api/auth/validate"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.message").value("Missing authorization header"));
     }

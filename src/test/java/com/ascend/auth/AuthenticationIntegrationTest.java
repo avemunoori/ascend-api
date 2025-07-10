@@ -64,7 +64,7 @@ class AuthenticationIntegrationTest {
         registerRequest.setFirstName("New");
         registerRequest.setLastName("User");
 
-        String registerResponse = mockMvc.perform(post("/auth/register")
+        String registerResponse = mockMvc.perform(post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isOk())
@@ -88,7 +88,7 @@ class AuthenticationIntegrationTest {
         loginRequest.setEmail(testUserEmail);
         loginRequest.setPassword(testUserPassword);
 
-        String loginResponse = mockMvc.perform(post("/auth/login")
+        String loginResponse = mockMvc.perform(post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isOk())
@@ -108,7 +108,7 @@ class AuthenticationIntegrationTest {
         assertEquals(testUserLastName, loginJson.get("user").get("lastName").asText());
 
         // 3. Test token validation
-        mockMvc.perform(post("/auth/validate")
+        mockMvc.perform(post("/api/auth/validate")
                 .header("Authorization", "Bearer " + loginToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").exists())
@@ -121,7 +121,7 @@ class AuthenticationIntegrationTest {
         invalidRequest.setEmail(testUserEmail);
         invalidRequest.setPassword("wrongpassword");
 
-        String invalidLoginResponse = mockMvc.perform(post("/auth/login")
+        String invalidLoginResponse = mockMvc.perform(post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isUnauthorized())
@@ -131,7 +131,7 @@ class AuthenticationIntegrationTest {
         assertEquals("Invalid credentials", invalidLoginJson.get("message").asText());
 
         // 5. Test invalid token validation
-        String invalidTokenResponse = mockMvc.perform(post("/auth/validate")
+        String invalidTokenResponse = mockMvc.perform(post("/api/auth/validate")
                 .header("Authorization", "Bearer invalid.token"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.message").value("Invalid token"))
@@ -140,7 +140,7 @@ class AuthenticationIntegrationTest {
         assertEquals("Invalid token", invalidTokenJson.get("message").asText());
 
         // 6. Test missing authorization header
-        String missingAuthResponse = mockMvc.perform(post("/auth/validate"))
+        String missingAuthResponse = mockMvc.perform(post("/api/auth/validate"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.message").value("Missing authorization header"))
                 .andReturn().getResponse().getContentAsString();
@@ -157,7 +157,7 @@ class AuthenticationIntegrationTest {
         invalidEmailRequest.setFirstName("Test");
         invalidEmailRequest.setLastName("User");
 
-        String invalidEmailResponse = mockMvc.perform(post("/auth/register")
+        String invalidEmailResponse = mockMvc.perform(post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidEmailRequest)))
                 .andExpect(status().isBadRequest())
@@ -173,7 +173,7 @@ class AuthenticationIntegrationTest {
         shortPasswordRequest.setFirstName("Test");
         shortPasswordRequest.setLastName("User");
 
-        String shortPasswordResponse = mockMvc.perform(post("/auth/register")
+        String shortPasswordResponse = mockMvc.perform(post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(shortPasswordRequest)))
                 .andExpect(status().isBadRequest())
@@ -189,7 +189,7 @@ class AuthenticationIntegrationTest {
         missingFirstNameRequest.setFirstName("");
         missingFirstNameRequest.setLastName("User");
 
-        String missingFirstNameResponse = mockMvc.perform(post("/auth/register")
+        String missingFirstNameResponse = mockMvc.perform(post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(missingFirstNameRequest)))
                 .andExpect(status().isBadRequest())
@@ -205,7 +205,7 @@ class AuthenticationIntegrationTest {
         missingLastNameRequest.setFirstName("Test");
         missingLastNameRequest.setLastName("");
 
-        String missingLastNameResponse = mockMvc.perform(post("/auth/register")
+        String missingLastNameResponse = mockMvc.perform(post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(missingLastNameRequest)))
                 .andExpect(status().isBadRequest())
@@ -221,7 +221,7 @@ class AuthenticationIntegrationTest {
         duplicateRequest.setFirstName("Test");
         duplicateRequest.setLastName("User");
 
-        String duplicateEmailResponse = mockMvc.perform(post("/auth/register")
+        String duplicateEmailResponse = mockMvc.perform(post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(duplicateRequest)))
                 .andExpect(status().isBadRequest())
@@ -238,7 +238,7 @@ class AuthenticationIntegrationTest {
         loginRequest.setEmail(testUserEmail);
         loginRequest.setPassword(testUserPassword);
 
-        String loginResponse = mockMvc.perform(post("/auth/login")
+        String loginResponse = mockMvc.perform(post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isOk())
@@ -256,7 +256,7 @@ class AuthenticationIntegrationTest {
         assertEquals(3, tokenParts.length, "JWT token should have 3 parts");
 
         // Verify token can be validated
-        mockMvc.perform(post("/auth/validate")
+        mockMvc.perform(post("/api/auth/validate")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").exists())
