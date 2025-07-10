@@ -1,8 +1,10 @@
 package com.ascend.session;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Getter;
 
 @Getter
+@JsonDeserialize(using = GradeDeserializer.class)
 public enum Grade {
     // V-Scale grades (for bouldering)
     V0(0.0, "V0", SessionDiscipline.BOULDER),
