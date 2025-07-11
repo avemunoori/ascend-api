@@ -5,21 +5,26 @@ import com.ascend.user.UserRepository;
 import com.ascend.user.UserService;
 import com.ascend.user.CreateUserRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import java.util.UUID;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
 
     private final UserRepository userRepository;
     private final UserService userService;
     private final JwtService jwtService;
+    private final PasswordResetService passwordResetService;
+    private final DomainValidator domainValidator;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
@@ -78,6 +83,11 @@ public class AuthController {
                 return ResponseEntity.badRequest().body(Map.of("message", "Last name is required"));
             }
 
+            // Validate email domain
+            if (!domainValidator.isValidDomain(request.getEmail())) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Email domain not allowed. Allowed domains: " + String.join(", ", domainValidator.getAllowedDomains())));
+            }
+
             // Check if user already exists
             if (userRepository.findByEmail(request.getEmail().trim().toLowerCase()).isPresent()) {
                 return ResponseEntity.badRequest().body(Map.of("message", "User with this email already exists"));
@@ -98,6 +108,34 @@ public class AuthController {
         } catch (Exception e) {
             e.printStackTrace(); // Log the full stack trace for debugging
             return ResponseEntity.status(500).body(Map.of("message", "Registration failed: " + e.getMessage()));
+        }
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        try {
+            passwordResetService.requestPasswordReset(request.getEmail());
+            // Always return success to prevent email enumeration
+            return ResponseEntity.ok(Map.of("message", "If an account with that email exists, a password reset link has been sent"));
+        } catch (Exception e) {
+            log.error("Error in forgot password request", e);
+            return ResponseEntity.status(500).body(Map.of("message", "An error occurred while processing your request"));
+        }
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        try {
+            boolean success = passwordResetService.resetPassword(request.getToken(), request.getNewPassword());
+            
+            if (success) {
+                return ResponseEntity.ok(Map.of("message", "Password has been reset successfully"));
+            } else {
+                return ResponseEntity.badRequest().body(Map.of("message", "Invalid or expired reset token"));
+            }
+        } catch (Exception e) {
+            log.error("Error in password reset", e);
+            return ResponseEntity.status(500).body(Map.of("message", "An error occurred while resetting your password"));
         }
     }
 }

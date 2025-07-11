@@ -30,5 +30,6 @@ public class User {
     private String lastName;
 
     @Column(name = "created_at")
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 }
