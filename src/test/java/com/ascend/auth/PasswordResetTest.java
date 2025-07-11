@@ -60,7 +60,7 @@ public class PasswordResetTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("If an account with that email exists, a password reset link has been sent"));
+                .andExpect(jsonPath("$.message").value("If an account with that email exists, a password reset code has been sent"));
     }
 
     @Test
@@ -73,7 +73,7 @@ public class PasswordResetTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("If an account with that email exists, a password reset link has been sent"));
+                .andExpect(jsonPath("$.message").value("If an account with that email exists, a password reset code has been sent"));
     }
 
     @Test
@@ -88,22 +88,22 @@ public class PasswordResetTest {
     }
 
     @Test
-    public void testResetPasswordWithInvalidToken() throws Exception {
+    public void testResetPasswordWithInvalidCode() throws Exception {
         ResetPasswordRequest request = new ResetPasswordRequest();
-        request.setToken("invalid-token");
+        request.setCode("123456");
         request.setNewPassword("newpassword123");
 
         mockMvc.perform(post("/api/auth/reset-password")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Invalid or expired reset token"));
+                .andExpect(jsonPath("$.message").value("Invalid or expired reset code"));
     }
 
     @Test
     public void testResetPasswordWithShortPassword() throws Exception {
         ResetPasswordRequest request = new ResetPasswordRequest();
-        request.setToken("valid-token");
+        request.setCode("123456");
         request.setNewPassword("123");
 
         mockMvc.perform(post("/api/auth/reset-password")

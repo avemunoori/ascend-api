@@ -30,13 +30,23 @@ Content-Type: application/json
 }
 ```
 
-### 2. Reset Password
+### 2. Verify Reset Code
+```
+POST /api/auth/verify-reset-code
+Content-Type: application/json
+
+{
+  "code": "123456"
+}
+```
+
+### 3. Reset Password
 ```
 POST /api/auth/reset-password
 Content-Type: application/json
 
 {
-  "token": "reset-token-here",
+  "code": "123456",
   "newPassword": "new-password-here"
 }
 ```
@@ -56,8 +66,9 @@ A new table `password_reset_tokens` has been added with the following structure:
 CREATE TABLE password_reset_tokens (
     id UUID PRIMARY KEY,
     user_id UUID NOT NULL REFERENCES users(id),
-    token VARCHAR(255) NOT NULL UNIQUE,
+    code VARCHAR(6) NOT NULL UNIQUE,
     expires_at TIMESTAMP NOT NULL,
+    attempts INTEGER NOT NULL DEFAULT 0,
     used BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -89,11 +100,12 @@ CREATE TABLE password_reset_tokens (
 
 ## Security Features
 
-### 1. Token Security
-- Secure UUID generation (no hyphens)
-- 1-hour expiration time
-- Single-use tokens
-- Automatic cleanup of expired tokens
+### 1. Code Security
+- 6-digit numeric code generation
+- 15-minute expiration time
+- Maximum 3 attempts per code
+- Single-use codes
+- Automatic cleanup of expired codes
 
 ### 2. Rate Limiting
 - 3 requests per hour per IP for forgot password
@@ -102,8 +114,8 @@ CREATE TABLE password_reset_tokens (
 
 ### 3. Email Security
 - No information disclosure about user existence
-- Secure reset links with tokens
-- Professional email templates
+- Secure reset codes sent via email
+- Professional email templates with prominent code display
 
 ### 4. Domain Validation
 - Restricted email domains for registration

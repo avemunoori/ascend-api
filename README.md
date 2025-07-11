@@ -25,6 +25,9 @@ A Spring Boot REST API for climbing session management and analytics.
 git clone https://github.com/avemunoori/ascend-api.git
 cd ascend-api
 
+# Set up environment variables
+./setup-env.sh
+
 # Run the application
 ./gradlew bootRun
 
@@ -101,6 +104,9 @@ This application is configured for easy deployment on Railway.
 |----------|-------------|----------|---------|
 | `DATABASE_URL` | PostgreSQL connection string | Yes | - |
 | `JWT_SECRET` | Secret for JWT token signing | Yes | - |
+| `MAILJET_API_KEY` | Mailjet API key for email sending | Yes | - |
+| `MAILJET_SECRET_KEY` | Mailjet secret key for email sending | Yes | - |
+| `FRONTEND_URL` | Frontend URL for password reset links | No | exp://localhost:8081 (Expo dev) |
 | `PORT` | Server port | No | 8080 |
 | `DB_USERNAME` | Database username | No | postgres |
 | `DB_PASSWORD` | Database password | No | - |

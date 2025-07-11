@@ -22,7 +22,8 @@ public class PasswordResetService {
     private final UserRepository userRepository;
     private final EmailService emailService;
 
-    private static final int TOKEN_EXPIRY_HOURS = 1;
+    private static final int CODE_EXPIRY_MINUTES = 15; // Shorter expiry for codes
+    private static final int MAX_ATTEMPTS = 3; // Maximum attempts for code verification
 
     @Transactional
     public void requestPasswordReset(String email) {
@@ -44,15 +45,16 @@ public class PasswordResetService {
             return;
         }
 
-        // Generate secure token
-        String token = generateSecureToken();
+        // Generate 6-digit code
+        String code = generateSecureCode();
 
         // Create password reset token
         PasswordResetToken resetToken = PasswordResetToken.builder()
                 .user(user)
-                .token(token)
-                .expiresAt(LocalDateTime.now().plusHours(TOKEN_EXPIRY_HOURS))
+                .code(code)
+                .expiresAt(LocalDateTime.now().plusMinutes(CODE_EXPIRY_MINUTES))
                 .used(false)
+                .attempts(0)
                 .createdAt(LocalDateTime.now())
                 .build();
 
@@ -60,8 +62,8 @@ public class PasswordResetService {
 
         // Send email
         try {
-            emailService.sendPasswordResetEmail(user.getEmail(), token, user.getFirstName());
-            log.info("Password reset token created and email sent for user: {}", user.getEmail());
+            emailService.sendPasswordResetEmail(user.getEmail(), code, user.getFirstName());
+            log.info("Password reset code created and email sent for user: {}", user.getEmail());
         } catch (Exception e) {
             log.error("Failed to send password reset email for user: {}", user.getEmail(), e);
             // Delete the token if email fails
@@ -71,26 +73,32 @@ public class PasswordResetService {
     }
 
     @Transactional
-    public boolean resetPassword(String token, String newPassword) {
-        // Find token
-        Optional<PasswordResetToken> tokenOpt = tokenRepository.findByTokenAndUsedFalse(token);
+    public boolean resetPassword(String code, String newPassword) {
+        // Find token by code
+        Optional<PasswordResetToken> tokenOpt = tokenRepository.findByCodeAndUsedFalse(code);
         
         if (tokenOpt.isEmpty()) {
-            log.warn("Password reset attempted with invalid token: {}", token);
+            log.warn("Password reset attempted with invalid code: {}", code);
             return false;
         }
 
         PasswordResetToken resetToken = tokenOpt.get();
 
-        // Check if token is expired
+        // Check if code is expired
         if (resetToken.isExpired()) {
-            log.warn("Password reset attempted with expired token: {}", token);
+            log.warn("Password reset attempted with expired code: {}", code);
             return false;
         }
 
-        // Check if token is already used
+        // Check if code is already used
         if (resetToken.isUsed()) {
-            log.warn("Password reset attempted with already used token: {}", token);
+            log.warn("Password reset attempted with already used code: {}", code);
+            return false;
+        }
+
+        // Check if too many attempts
+        if (resetToken.getAttempts() >= MAX_ATTEMPTS) {
+            log.warn("Password reset attempted with code that has exceeded max attempts: {}", code);
             return false;
         }
 
@@ -111,8 +119,46 @@ public class PasswordResetService {
         return true;
     }
 
-    private String generateSecureToken() {
-        return UUID.randomUUID().toString().replace("-", "");
+    @Transactional
+    public boolean verifyCode(String code) {
+        Optional<PasswordResetToken> tokenOpt = tokenRepository.findByCodeAndUsedFalse(code);
+        
+        if (tokenOpt.isEmpty()) {
+            log.warn("Code verification attempted with invalid code: {}", code);
+            return false;
+        }
+
+        PasswordResetToken resetToken = tokenOpt.get();
+
+        // Check if code is expired
+        if (resetToken.isExpired()) {
+            log.warn("Code verification attempted with expired code: {}", code);
+            return false;
+        }
+
+        // Check if code is already used
+        if (resetToken.isUsed()) {
+            log.warn("Code verification attempted with already used code: {}", code);
+            return false;
+        }
+
+        // Increment attempts
+        resetToken.setAttempts(resetToken.getAttempts() + 1);
+        tokenRepository.save(resetToken);
+
+        // Check if too many attempts
+        if (resetToken.getAttempts() >= MAX_ATTEMPTS) {
+            log.warn("Code verification failed - too many attempts for code: {}", code);
+            return false;
+        }
+
+        log.info("Code verified successfully for user: {}", resetToken.getUser().getEmail());
+        return true;
+    }
+
+    private String generateSecureCode() {
+        // Generate a 6-digit numeric code
+        return String.format("%06d", (int) (Math.random() * 1000000));
     }
 
     @Scheduled(cron = "0 0 */6 * * *") // Run every 6 hours

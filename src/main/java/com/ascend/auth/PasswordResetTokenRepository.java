@@ -13,9 +13,9 @@ import java.util.UUID;
 @Repository
 public interface PasswordResetTokenRepository extends JpaRepository<PasswordResetToken, UUID> {
     
-    Optional<PasswordResetToken> findByToken(String token);
+    Optional<PasswordResetToken> findByCode(String code);
     
-    Optional<PasswordResetToken> findByTokenAndUsedFalse(String token);
+    Optional<PasswordResetToken> findByCodeAndUsedFalse(String code);
     
     @Query("SELECT COUNT(p) > 0 FROM PasswordResetToken p WHERE p.user.id = :userId AND p.used = false AND p.expiresAt > :now")
     boolean existsValidTokenForUser(@Param("userId") UUID userId, @Param("now") LocalDateTime now);

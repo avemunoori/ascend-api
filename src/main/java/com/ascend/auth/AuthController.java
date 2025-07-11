@@ -116,22 +116,38 @@ public class AuthController {
         try {
             passwordResetService.requestPasswordReset(request.getEmail());
             // Always return success to prevent email enumeration
-            return ResponseEntity.ok(Map.of("message", "If an account with that email exists, a password reset link has been sent"));
+            return ResponseEntity.ok(Map.of("message", "If an account with that email exists, a password reset code has been sent"));
         } catch (Exception e) {
             log.error("Error in forgot password request", e);
             return ResponseEntity.status(500).body(Map.of("message", "An error occurred while processing your request"));
         }
     }
 
+    @PostMapping("/verify-reset-code")
+    public ResponseEntity<?> verifyResetCode(@Valid @RequestBody VerifyResetCodeRequest request) {
+        try {
+            boolean isValid = passwordResetService.verifyCode(request.getCode());
+            
+            if (isValid) {
+                return ResponseEntity.ok(Map.of("message", "Code is valid"));
+            } else {
+                return ResponseEntity.badRequest().body(Map.of("message", "Invalid or expired reset code"));
+            }
+        } catch (Exception e) {
+            log.error("Error in code verification", e);
+            return ResponseEntity.status(500).body(Map.of("message", "An error occurred while verifying the code"));
+        }
+    }
+
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
         try {
-            boolean success = passwordResetService.resetPassword(request.getToken(), request.getNewPassword());
+            boolean success = passwordResetService.resetPassword(request.getCode(), request.getNewPassword());
             
             if (success) {
                 return ResponseEntity.ok(Map.of("message", "Password has been reset successfully"));
             } else {
-                return ResponseEntity.badRequest().body(Map.of("message", "Invalid or expired reset token"));
+                return ResponseEntity.badRequest().body(Map.of("message", "Invalid or expired reset code"));
             }
         } catch (Exception e) {
             log.error("Error in password reset", e);

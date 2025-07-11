@@ -1,0 +1,24 @@
+# Environment Variables Template
+# Copy this content to a .env file in your project root
+
+# Mailjet API Credentials
+MAILJET_API_KEY=27ed38a02b4313f83e5f804394a4f273
+MAILJET_SECRET_KEY=72d6fe739f72fc8d5a6a7a67dacbe811
+
+# Frontend URL (update this for production)
+# For Expo development: exp://localhost:8081
+# For Expo production: your-app-scheme://
+FRONTEND_URL=exp://localhost:8081
+
+# JWT Secret (generate a secure one for production)
+JWT_SECRET=6E34B2A8C61A4F96B3B43F55F75817DEFCF9E9D1E798A6E8BC5E9A3D908F86AB
+
+# Database Configuration (for local development)
+DATABASE_URL=jdbc:h2:mem:testdb
+DB_USERNAME=sa
+DB_PASSWORD=
+DB_DRIVER=org.h2.Driver
+HIBERNATE_DIALECT=org.hibernate.dialect.H2Dialect
+
+# Server Port
+PORT=8080 
