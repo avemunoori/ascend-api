@@ -1,24 +1,32 @@
-# Environment Variables Template
+# Environment Variables Template for Production
 # Copy this content to a .env file in your project root
+# IMPORTANT: Replace all placeholder values with your actual production values
 
-# Mailjet API Credentials
-MAILJET_API_KEY=27ed38a02b4313f83e5f804394a4f273
-MAILJET_SECRET_KEY=72d6fe739f72fc8d5a6a7a67dacbe811
+# Mailjet API Credentials (REQUIRED - Get from Mailjet dashboard)
+MAILJET_API_KEY=your_mailjet_api_key_here
+MAILJET_SECRET_KEY=your_mailjet_secret_key_here
 
-# Frontend URL (update this for production)
+# Frontend URL (REQUIRED for production)
 # For Expo development: exp://localhost:8081
-# For Expo production: your-app-scheme://
-FRONTEND_URL=exp://localhost:8081
+# For Expo production: your-app-scheme:// (e.g., ascend://)
+# For universal links: https://your-domain.com
+FRONTEND_URL=your_production_frontend_url_here
 
-# JWT Secret (generate a secure one for production)
-JWT_SECRET=6E34B2A8C61A4F96B3B43F55F75817DEFCF9E9D1E798A6E8BC5E9A3D908F86AB
+# JWT Secret (REQUIRED - Generate a secure random string)
+# Generate with: openssl rand -hex 32
+JWT_SECRET=your_secure_jwt_secret_here
 
-# Database Configuration (for local development)
-DATABASE_URL=jdbc:h2:mem:testdb
-DB_USERNAME=sa
-DB_PASSWORD=
-DB_DRIVER=org.h2.Driver
-HIBERNATE_DIALECT=org.hibernate.dialect.H2Dialect
+# Database Configuration (Railway provides DATABASE_URL)
+DATABASE_URL=your_railway_postgresql_url_here
+DB_USERNAME=postgres
+DB_PASSWORD=your_db_password_here
+DB_DRIVER=org.postgresql.Driver
+HIBERNATE_DIALECT=org.hibernate.dialect.PostgreSQLDialect
 
-# Server Port
+# CORS Configuration (OPTIONAL - for additional security)
+# Comma-separated list of allowed origins
+# Example: https://your-app.com,https://www.your-app.com
+APP_CORS_ALLOWED_ORIGINS=
+
+# Server Port (Railway sets this automatically)
 PORT=8080 

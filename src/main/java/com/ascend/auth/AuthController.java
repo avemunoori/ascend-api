@@ -106,8 +106,8 @@ public class AuthController {
             UserResponse userResponse = new UserResponse(user.getId(), user.getEmail(), user.getCreatedAt(), user.getFirstName(), user.getLastName());
             return ResponseEntity.ok(new JwtResponse(token, userResponse));
         } catch (Exception e) {
-            e.printStackTrace(); // Log the full stack trace for debugging
-            return ResponseEntity.status(500).body(Map.of("message", "Registration failed: " + e.getMessage()));
+            log.error("Registration failed for email: {}", request.getEmail(), e);
+            return ResponseEntity.status(500).body(Map.of("message", "Registration failed. Please try again."));
         }
     }
 
