@@ -10,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -40,7 +41,7 @@ public class TrainingController {
     }
 
     @PostMapping("/user-plans")
-    public ResponseEntity<UserTrainingPlanDto> startPlan(
+    public ResponseEntity<?> startPlan(
             @AuthenticationPrincipal User user,
             @Valid @RequestBody StartPlanRequest request) {
         
@@ -49,7 +50,7 @@ public class TrainingController {
             return ResponseEntity.ok(plan);
         } catch (RuntimeException e) {
             log.error("Error starting plan for user {}: {}", user.getId(), e.getMessage());
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }
     }
 
