@@ -30,7 +30,8 @@ public class SecurityConfig {
                     .csrf(csrf -> csrf.disable())
                     .cors(cors -> cors.configurationSource(corsConfigurationSource))
                     .authorizeHttpRequests(auth -> auth
-                            .requestMatchers("/health", "/", "/api/**").permitAll()
+                            .requestMatchers("/health", "/", "/api/auth/**").permitAll()
+                            .requestMatchers("/api/training/templates").permitAll()
                             .anyRequest().authenticated()
                     )
                     .sessionManagement(sess -> sess
@@ -43,7 +44,8 @@ public class SecurityConfig {
                     .csrf(csrf -> csrf.disable())
                     .cors(cors -> cors.configurationSource(corsConfigurationSource))
                     .authorizeHttpRequests(auth -> auth
-                            .requestMatchers("/health", "/", "/api/**").permitAll()
+                            .requestMatchers("/health", "/", "/api/auth/**").permitAll()
+                            .requestMatchers("/api/training/templates").permitAll()
                             .anyRequest().authenticated()
                     )
                     .sessionManagement(sess -> sess
