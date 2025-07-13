@@ -6,7 +6,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -48,23 +50,31 @@ class BasicApiTest {
 
     @Test
     void protectedEndpoints_ShouldRequireAuthentication() throws Exception {
-        // In test mode, API endpoints are accessible without authentication
-        // Test that endpoints return appropriate responses
-        mockMvc.perform(get("/api/users/me"))
-                .andExpect(status().isUnauthorized()); // Missing Authorization header
-        
-        mockMvc.perform(get("/api/sessions"))
-                .andExpect(status().isUnauthorized()); // Missing Authorization header
-        
-        mockMvc.perform(get("/api/users/123e4567-e89b-12d3-a456-426614174000"))
-                .andExpect(status().isNotFound()); // User not found (endpoint is accessible)
+        MvcResult result1 = mockMvc.perform(get("/api/users/me")).andReturn();
+        System.out.println("[protectedEndpoints_ShouldRequireAuthentication] /api/users/me Status: " + result1.getResponse().getStatus());
+        System.out.println("[protectedEndpoints_ShouldRequireAuthentication] /api/users/me Body: " + result1.getResponse().getContentAsString());
+        assertEquals(401, result1.getResponse().getStatus());
+
+        MvcResult result2 = mockMvc.perform(get("/api/sessions")).andReturn();
+        System.out.println("[protectedEndpoints_ShouldRequireAuthentication] /api/sessions Status: " + result2.getResponse().getStatus());
+        System.out.println("[protectedEndpoints_ShouldRequireAuthentication] /api/sessions Body: " + result2.getResponse().getContentAsString());
+        assertEquals(401, result2.getResponse().getStatus());
+
+        MvcResult result3 = mockMvc.perform(get("/api/users/123e4567-e89b-12d3-a456-426614174000")).andReturn();
+        System.out.println("[protectedEndpoints_ShouldRequireAuthentication] /api/users/{id} Status: " + result3.getResponse().getStatus());
+        System.out.println("[protectedEndpoints_ShouldRequireAuthentication] /api/users/{id} Body: " + result3.getResponse().getContentAsString());
+        assertEquals(404, result3.getResponse().getStatus());
     }
 
     @Test
     void createUserEndpoint_ShouldBeAccessible() throws Exception {
-        mockMvc.perform(post("/api/users")
+        MvcResult result = mockMvc.perform(post("/api/users")
                 .contentType("application/json")
                 .content("{\"email\":\"newuser@example.com\",\"password\":\"password123\",\"firstName\":\"New\",\"lastName\":\"User\"}"))
-                .andExpect(status().isOk()); // User creation endpoint should be accessible without authentication
+                .andReturn();
+        System.out.println("[createUserEndpoint_ShouldBeAccessible] Status: " + result.getResponse().getStatus());
+        System.out.println("[createUserEndpoint_ShouldBeAccessible] Body: " + result.getResponse().getContentAsString());
+        // Keep the assertion for test result
+        assertEquals(200, result.getResponse().getStatus());
     }
 } 
